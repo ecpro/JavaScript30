@@ -26,6 +26,26 @@
       misc styles, nothing to do with CSS variables
     */
 
+    /*
+    :root is psuedo class for selecting root document which in this case in <html>
+    */
+
+    :root {
+      --spacing: 10px;
+      --base: #ffc600;
+      --blur: 10px;
+    }
+
+    img {
+      filter: blur(var(--blur));
+      padding: var(--spacing);
+      background-color: var(--base);
+    }
+
+    .h1 {
+      color: var(--base);
+    }
+
     body {
       text-align: center;
       background: #193549;
@@ -45,6 +65,24 @@
   </style>
 
   <script>
+      
+      var inputNodesList = document.querySelectorAll('.controls input');
+
+      // document.querySelectorAll does not return an Array but a NodeList
+      // But we can call Array's forEach using call method
+
+      Array.prototype.forEach.call(inputNodesList, function(input){
+        // modifyCssProperty will run in input's context i.e. 'this' inside modifyCssProperty will point to input object not window
+        input.addEventListener('change', modifyCssProperty); 
+        input.addEventListener('mousemove', modifyCssProperty); 
+      });
+
+      function modifyCssProperty() {
+        // document.documentElement returns root element which in this case is <html>
+        var suffix = this.dataset.sizing || ''; // 'this' will point to input object
+        document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+      }
+
   </script>
 
 </body>
