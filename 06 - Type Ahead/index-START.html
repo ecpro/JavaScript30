@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <form class="search-form">
@@ -14,9 +16,67 @@
       <li>or a state</li>
     </ul>
   </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  <script>
+    //--------------- fetch cities from the api using fetch API --------------------------
 
-</script>
-  </body>
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    const cities = [];
+    // fetch api is a new browser api to send ajax request. It returns a javascript promise.
+    fetch(endpoint)
+      // when promise resolves it return a response succesfully and now this response is passed to
+      // a function (ES6 way here). Response has another promise json() which when resolves
+      // returns array of json data.
+      .then(response => response.json()) // response.json() returns another promise
+      // now this array of data can be copied into another array element by element using ES6 array spread utility
+      // as shown below. (triple dot before data in push function)
+      .then(data => cities.push(...data));
+
+    // --------------- match with the token ----------------------------------------------
+
+    function findMatches(token, cities) {
+      return cities.filter((location) => {
+        // since regex is a variable(token) here so we cannot directly provide it to match() as .match(/token/gi). That's why
+        // below technique is employed.
+        const regex = new RegExp(token, 'gi'); // g : global ( which means look into entire string for multiple matches), i : case insensitive
+        return location.city.match(regex) || location.state.match(regex);
+      });
+    }
+
+    const searchInput = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    function displayMatches() {
+
+      if(this.value === '') {
+        suggestions.innerHTML = `<li>Filter for a city</li><li>or a state</li>`;
+        return;
+      }
+
+      const matches = findMatches(this.value, cities);
+      const suggestionHTML = matches.map((place) => {
+
+        const regex = new RegExp(this.value, 'gi');
+        const city = place.city.replace(regex, `<span class='hl'>${this.value}</span>`);
+        const state = place.state.replace(regex, `<span class='hl'>${this.value}</span>`);
+
+        return `<li>
+            <span class='name'>${city}, ${state}</span>
+            <span class='population'>${numberWithCommas(place.population)}</span>
+        </li>`;
+      }).join('');
+      suggestions.innerHTML = suggestionHTML;
+    }
+
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    searchInput.addEventListener('keyup', displayMatches);
+
+    // document.querySelector('.search').addEventListener('keyup', function (event) {
+    //   console.log(findMatches(this.value, cities));
+    // });
+  </script>
+</body>
+
 </html>
