@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML5 canvas</title>
+</head>
+<body>
+	<canvas id='rs' height='200' width='200'></canvas>
+	<canvas id='rf' height='400' width='400'></canvas>
+</body>
+	<script type="text/javascript">
+		const rs = document.querySelector('#rs');
+		const rCtx = rs.getContext('2d');
+		rCtx.strokeStyle = 'blue';
+		rCtx.strokeRect(0,0, 100, 100);
+		
+		const rf = document.querySelector('#rf');
+		const fCtx = rf.getContext('2d');
+		fCtx.fillStyle = 'blue';
+		fCtx.fillRect(0,0, 100, 100);
+	</script>
+</html>
